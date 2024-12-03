@@ -77,6 +77,7 @@ class Board(object):
                 new_col.append(v)
             else:
                 new_col.append(die)
+                break
         cols[col_idx] = new_col
         self.to_list(*cols)
         return True
