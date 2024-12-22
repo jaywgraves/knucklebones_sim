@@ -14,7 +14,7 @@ def get_seed(start,end,seeds_used=seeds_used):
 
 if __name__ == '__main__':
     all_stats = []
-    total_runs = 5
+    total_runs = 1
     checkpoint = 100
     show_output = True
     data_dir = 'data'

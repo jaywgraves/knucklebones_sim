@@ -54,10 +54,6 @@ class Game(object):
             if result:
                 print("result", result, "p1", p1_score, "p2", p2_score)
                 break
-            print("turn summary", turn_cnt, p1_score, p2_score)
-            # temp debugging
-            if turn_cnt > 10:
-                break
         return stats
 
 
