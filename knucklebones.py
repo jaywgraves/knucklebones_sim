@@ -33,27 +33,27 @@ class Game(object):
             round_cnt += 1
             turn_cnt += 1
             die = self.p1.roll()
-            play_col = self.p1.strategy(die, self.p1, self.p2)
+            strat, play_col = self.p1.strategy(die, self.p1, self.p2)
             success = self.p1.board.place(die, play_col)
             if success:
                 self.p2.board.remove(die, play_col)
             else:
                 print("strategy made an invalid suggestion")
             result, p1_score, p1_cnt, p2_score, p2_cnt = self.check_for_win()
-            stats.append((game_nbr, round_cnt, turn_cnt, result, p1_score, p1_cnt, p2_score, p2_cnt))
+            stats.append((game_nbr, round_cnt, turn_cnt, self.p1.name, strat, self.p1.seed, die, play_col, result, p1_score, p1_cnt, p2_score, p2_cnt))
             if result:
                 print("result", result, "p1", p1_score, "p2", p2_score)
                 break
             turn_cnt += 1
             die = self.p2.roll()
-            play_col = self.p2.strategy(die, self.p2, self.p1)
+            strat, play_col = self.p2.strategy(die, self.p2, self.p1)
             success = self.p2.board.place(die, play_col)
             if success:
                 self.p1.board.remove(die, play_col)
             else:
                 print("strategy made an invalid suggestion")
             result, p1_score, p1_cnt, p2_score, p2_cnt = self.check_for_win()
-            stats.append((game_nbr, round_cnt, turn_cnt, result, p1_score, p1_cnt, p2_score, p2_cnt))
+            stats.append((game_nbr, round_cnt, turn_cnt, self.p2.name, strat, self.p2.seed, die, play_col, result, p1_score, p1_cnt, p2_score, p2_cnt))
             if result:
                 print("result", result, "p1", p1_score, "p2", p2_score)
                 break
@@ -141,6 +141,7 @@ class Player(object):
 
     def __init__(self, name, seed, strategy):
         self.name = name
+        self.seed = seed
         self.rand_dice = random.Random(seed)
         self.rand_decision = random.Random(seed)
         if strategy:
@@ -163,13 +164,13 @@ def random_play(die, a, b):
     a_score = a.board.score()
     b_score = b.board.score()
     # find any open column on my board and put the die in it
-    return a.choose(a.board.avail_columns())
+    return desc, a.choose(a.board.avail_columns())
 
 def first_available(die, a, b):
     # 'a' and 'b' can refer to either p1 or p2 based
     # on who is playing this turn
-        desc = 'first available'
-        a_score = a.board.score()
-        b_score = b.board.score()
-        # find first open column on my board and put the die in it
-        return a.board.avail_columns()[0]
+    desc = 'first available'
+    a_score = a.board.score()
+    b_score = b.board.score()
+    # find first open column on my board and put the die in it
+    return desc, a.board.avail_columns()[0]
