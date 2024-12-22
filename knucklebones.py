@@ -12,23 +12,26 @@ class Game(object):
         # but the player without the full board could still be the winner
         p1_score = self.p1.board.score()
         p2_score = self.p2.board.score()
-        p1_full = self.p1.board.full()
-        p2_full = self.p2.board.full()
+        p1_empty_cnt = self.p1.board.empty_count()
+        p2_empty_cnt = self.p2.board.empty_count()
+
         winning_player = ''
-        if p1_full or p2_full:
+        if p1_empty_cnt == 0 or p2_empty_cnt == 0:
             if p1_score == p2_score:
                 winning_player = 'tie'
             elif p1_score > p2_score:
                 winning_player = 'p1'
             else:
                 winning_player = 'p2'
-        return winning_player, p1_score, p2_score
+        return winning_player, p1_score, 9 - p1_empty_cnt, p2_score, 9 - p2_empty_cnt
 
     def play(self, game_nbr):
         turn_cnt = 0
+        round_cnt = 0
         stats = []
         while True:
-            turn_cnt += .5
+            round_cnt += 1
+            turn_cnt += 1
             die = self.p1.roll()
             play_col = self.p1.strategy(die, self.p1, self.p2)
             success = self.p1.board.place(die, play_col)
@@ -36,12 +39,12 @@ class Game(object):
                 self.p2.board.remove(die, play_col)
             else:
                 print("strategy made an invalid suggestion")
-            result, p1_score, p2_score = self.check_for_win()
-            stats.append((game_nbr, turn_cnt, result, p1_score, p2_score))
+            result, p1_score, p1_cnt, p2_score, p2_cnt = self.check_for_win()
+            stats.append((game_nbr, round_cnt, turn_cnt, result, p1_score, p1_cnt, p2_score, p2_cnt))
             if result:
                 print("result", result, "p1", p1_score, "p2", p2_score)
                 break
-            turn_cnt += .5
+            turn_cnt += 1
             die = self.p2.roll()
             play_col = self.p2.strategy(die, self.p2, self.p1)
             success = self.p2.board.place(die, play_col)
@@ -49,8 +52,8 @@ class Game(object):
                 self.p1.board.remove(die, play_col)
             else:
                 print("strategy made an invalid suggestion")
-            result, p1_score, p2_score = self.check_for_win()
-            stats.append((game_nbr, turn_cnt, result, p1_score, p2_score))
+            result, p1_score, p1_cnt, p2_score, p2_cnt = self.check_for_win()
+            stats.append((game_nbr, round_cnt, turn_cnt, result, p1_score, p1_cnt, p2_score, p2_cnt))
             if result:
                 print("result", result, "p1", p1_score, "p2", p2_score)
                 break
@@ -125,8 +128,8 @@ class Board(object):
                 score += (pip * 9)
         return score
 
-    def full(self):
-        return not self.avail_columns()
+    def empty_count(self):
+        return self.data.count(0)
 
     def avail_columns(self):
         cols = self._columns()
