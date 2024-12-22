@@ -78,6 +78,8 @@ class Board(object):
             else:
                 new_col.append(die)
                 break
+        new_col.extend([0]*3)
+        new_col = new_col[:3]
         cols[col_idx] = new_col
         self.to_list(*cols)
         return True
