@@ -6,6 +6,7 @@ class Game(object):
     def __init__(self, p1, p2, show_output):
         self.p1 = p1
         self.p2 = p2
+        self.show_output = show_output
 
     def check_for_win(self):
         # one of the boards must be full
@@ -34,29 +35,52 @@ class Game(object):
             turn_cnt += 1
             die = self.p1.roll()
             strat, play_col = self.p1.strategy(die, self.p1, self.p2)
+            if self.show_output:
+                print("p1 rolled", die, "picked col", play_col)
             success = self.p1.board.place(die, play_col)
             if success:
                 self.p2.board.remove(die, play_col)
             else:
-                print("strategy made an invalid suggestion")
+                print("strategy", strat, "made an invalid suggestion")
+                print(stats)
+                raise SystemExit
             result, p1_score, p1_cnt, p2_score, p2_cnt = self.check_for_win()
             stats.append((game_nbr, round_cnt, turn_cnt, self.p1.name, strat, self.p1.seed, die, play_col, result, p1_score, p1_cnt, p2_score, p2_cnt))
             if result:
-                print("result", result, "p1", p1_score, "p2", p2_score)
+                if self.show_output:
+                    print("result", result, "p1", p1_score, "p2", p2_score)
                 break
             turn_cnt += 1
             die = self.p2.roll()
             strat, play_col = self.p2.strategy(die, self.p2, self.p1)
+            if self.show_output:
+                print("p2 rolled", die, "picked col", play_col)
             success = self.p2.board.place(die, play_col)
             if success:
                 self.p1.board.remove(die, play_col)
             else:
-                print("strategy made an invalid suggestion")
+                print("strategy", strat, "made an invalid suggestion")
+                print(stats)
+                raise SystemExit
             result, p1_score, p1_cnt, p2_score, p2_cnt = self.check_for_win()
             stats.append((game_nbr, round_cnt, turn_cnt, self.p2.name, strat, self.p2.seed, die, play_col, result, p1_score, p1_cnt, p2_score, p2_cnt))
             if result:
-                print("result", result, "p1", p1_score, "p2", p2_score)
+                if self.show_output:
+                    print("result", result, "p1", p1_score, "p2", p2_score)
                 break
+            if self.show_output:
+                self.p2.board.show(reverse=True)
+                print('-------------------')
+                self.p1.board.show()
+                print("round summary", round_cnt, "p1", p1_score, "p2", p2_score)
+                print()
+
+        if self.show_output:
+            print('final board')
+            self.p2.board.show(reverse=True)
+            print('-------------------')
+            self.p1.board.show()
+            print()
         return stats
 
 
@@ -135,6 +159,17 @@ class Board(object):
         cols = self._columns()
         available = [i for i,c in enumerate(cols) if 0 in c]
         return available
+
+    def show(self, reverse=False):
+        cols = self._columns()
+        if reverse:
+            cols = [list(reversed(c)) for c in cols]
+        for a,b,c in zip(*cols):
+            if a == 0: a = '-'
+            if b == 0: b = '-'
+            if c == 0: c = '-'
+            print(a, '\t', b, '\t', c)
+
 
 
 class Player(object):

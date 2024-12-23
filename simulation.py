@@ -14,9 +14,9 @@ def get_seed(start,end,seeds_used=seeds_used):
 
 if __name__ == '__main__':
     all_stats = []
-    total_runs = 1
-    checkpoint = 100
-    show_output = True
+    total_runs = 10000
+    checkpoint = 10000
+    show_output = False
     data_dir = 'data'
     beg_seed = 1
     end_seed = total_runs * 100
@@ -28,13 +28,14 @@ if __name__ == '__main__':
     start = time.time()
     for i in range(total_runs):
         game_nbr = i+1
-        p1 = knucklebones.Player('x', get_seed(beg_seed, end_seed), knucklebones.random_play)
-        p2 = knucklebones.Player('y', get_seed(beg_seed, end_seed), knucklebones.random_play)
+        #p1 = knucklebones.Player('p1', get_seed(beg_seed, end_seed), knucklebones.random_play)
+        #p2 = knucklebones.Player('p2', get_seed(beg_seed, end_seed), knucklebones.random_play)
+        p1 = knucklebones.Player('p1', get_seed(beg_seed, end_seed), knucklebones.first_available)
+        p2 = knucklebones.Player('p2', get_seed(beg_seed, end_seed), knucklebones.first_available)
 
         g = knucklebones.Game(p1, p2, show_output=show_output)
         stats = g.play(game_nbr)
         all_stats.extend(stats)
-        continue   # temporary
         if (game_nbr) % checkpoint == 0:
             filename = format(i+1, "08d") + '_stats.csv'
             print("saving checkpoint", filename, datetime.datetime.isoformat(datetime.datetime.now()))
