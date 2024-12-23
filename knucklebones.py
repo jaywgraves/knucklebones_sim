@@ -31,6 +31,8 @@ class Game(object):
         round_cnt = 0
         game_over = False
         stats = []
+        if self.show_output:
+            print(f"game number:{game_nbr}  p1: strategy='{self.p1.strategy_desc}' seed={self.p1.seed}  p2: strategy='{self.p2.strategy_desc}' seed={self.p2.seed}")
         while True:
             round_cnt += 1
             for pcurr,pother in ((self.p1, self.p2), (self.p2, self.p1)):
@@ -151,9 +153,9 @@ class Board(object):
             cols = [list(reversed(c)) for c in cols]
         row = 0
         for a,b,c in zip(*cols):
-            if a == 0: a = '-'
-            if b == 0: b = '-'
-            if c == 0: c = '-'
+            if a == 0: a = '.'
+            if b == 0: b = '.'
+            if c == 0: c = '.'
             if row == 1:
                 prefix = f"{player_name}  "
             else:
@@ -174,6 +176,7 @@ class Player(object):
             self.strategy = strategy
         else:
             self.strategy = random_play
+        self.strategy_desc, _ = self.strategy(None, None, None)
         self.board = Board()
 
     def roll(self):
@@ -187,6 +190,8 @@ def random_play(die, a, b):
     # 'a' and 'b' can refer to either p1 or p2 based
     # on who is playing this turn
     desc = 'random play'
+    if die is None:   # getting description w/o advancing random seed
+        return desc, None
     a_score = a.board.score()
     b_score = b.board.score()
     # find any open column on my board and put the die in it
@@ -196,6 +201,8 @@ def first_available(die, a, b):
     # 'a' and 'b' can refer to either p1 or p2 based
     # on who is playing this turn
     desc = 'first available'
+    if die is None:   # getting description w/o advancing random seed
+        return desc, None
     a_score = a.board.score()
     b_score = b.board.score()
     # find first open column on my board and put the die in it
