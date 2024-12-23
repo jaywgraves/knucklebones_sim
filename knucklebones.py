@@ -55,9 +55,9 @@ class Game(object):
                     break  # round iteration
             # end round
             if self.show_output:
-                self.p2.board.show(reverse=True)
-                print('-----')
-                self.p1.board.show()
+                self.p2.board.show(self.p2.name, reverse=True)
+                print('     -----')
+                self.p1.board.show(self.p1.name)
                 if game_over:
                     summary_type = 'final summary total rounds:'
                 else:
@@ -145,16 +145,21 @@ class Board(object):
         available = [i for i,c in enumerate(cols) if 0 in c]
         return available
 
-    def show(self, reverse=False):
+    def show(self, player_name, reverse=False):
         cols = self._columns()
         if reverse:
             cols = [list(reversed(c)) for c in cols]
+        row = 0
         for a,b,c in zip(*cols):
             if a == 0: a = '-'
             if b == 0: b = '-'
             if c == 0: c = '-'
-            #print(a, '\t', b, '\t', c)
-            print(a, b, c)
+            if row == 1:
+                prefix = f"{player_name}  "
+            else:
+                prefix = "    "
+            row += 1
+            print(prefix, a, b, c)
 
 
 
