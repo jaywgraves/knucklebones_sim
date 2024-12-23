@@ -29,58 +29,43 @@ class Game(object):
     def play(self, game_nbr):
         turn_cnt = 0
         round_cnt = 0
+        game_over = False
         stats = []
         while True:
             round_cnt += 1
-            turn_cnt += 1
-            die = self.p1.roll()
-            strat, play_col = self.p1.strategy(die, self.p1, self.p2)
-            if self.show_output:
-                print(f"p1 rolled:{die}  picked column:{play_col+1}")
-            success = self.p1.board.place(die, play_col)
-            if success:
-                self.p2.board.remove(die, play_col)
-            else:
-                print("strategy", strat, "made an invalid suggestion")
-                print(stats)
-                raise SystemExit
-            result, p1_score, p1_cnt, p2_score, p2_cnt = self.check_for_win()
-            stats.append((game_nbr, round_cnt, turn_cnt, self.p1.name, strat, self.p1.seed, die, play_col, result, p1_score, p1_cnt, p2_score, p2_cnt))
-            if result:
+            for pcurr,pother in ((self.p1, self.p2), (self.p2, self.p1)):
+                turn_cnt += 1
+                die = pcurr.roll()
+                strat, play_col = pcurr.strategy(die, pcurr, pother)
                 if self.show_output:
-                    print(f"result:{result} p1={p1_score} p2={p2_score}")
-                break
-            turn_cnt += 1
-            die = self.p2.roll()
-            strat, play_col = self.p2.strategy(die, self.p2, self.p1)
-            if self.show_output:
-                print(f"p2 rolled:{die}  picked column:{play_col+1}")
-            success = self.p2.board.place(die, play_col)
-            if success:
-                self.p1.board.remove(die, play_col)
-            else:
-                print("strategy", strat, "made an invalid suggestion")
-                print(stats)
-                raise SystemExit
-            result, p1_score, p1_cnt, p2_score, p2_cnt = self.check_for_win()
-            stats.append((game_nbr, round_cnt, turn_cnt, self.p2.name, strat, self.p2.seed, die, play_col, result, p1_score, p1_cnt, p2_score, p2_cnt))
-            if result:
-                if self.show_output:
-                    print(f"result:{result} p1={p1_score} p2={p2_score}")
-                break
+                    print(f"{pcurr.name} rolled:{die}  picked column:{play_col+1}")
+                success = pcurr.board.place(die, play_col)
+                if success:
+                    pother.board.remove(die, play_col)
+                else:
+                    print(f"{pcurr.name} strategy {strat} made an invalid suggestion")
+                    print(stats)
+                    raise SystemExit
+                result, p1_score, p1_cnt, p2_score, p2_cnt = self.check_for_win()
+                stats.append((game_nbr, round_cnt, turn_cnt, pcurr.name, strat, pcurr.seed, die, play_col, result, p1_score, p1_cnt, p2_score, p2_cnt))
+                if result:
+                    if self.show_output:
+                        print(f"result:{result} p1={p1_score} p2={p2_score}")
+                    game_over = True
+                    break  # round iteration
+            # end round
             if self.show_output:
                 self.p2.board.show(reverse=True)
                 print('-----')
                 self.p1.board.show()
-                print(f"round summary:{round_cnt} p1={p1_score} p2={p2_score}")
+                if game_over:
+                    summary_type = 'final summary total rounds:'
+                else:
+                    summary_type = 'round summary:'
+                print(f"{summary_type}{round_cnt} p1={p1_score} p2={p2_score}")
                 print()
-
-        if self.show_output:
-            print('final board')
-            self.p2.board.show(reverse=True)
-            print('-----')
-            self.p1.board.show()
-            print()
+            if game_over:
+                break  # whole game loop
         return stats
 
 
