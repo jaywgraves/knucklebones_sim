@@ -192,8 +192,6 @@ def random_play(die, a, b):
     desc = 'random play'
     if die is None:   # getting description w/o advancing random seed
         return desc, None
-    a_score = a.board.score()
-    b_score = b.board.score()
     # find any open column on my board and put the die in it
     return desc, a.choose(a.board.avail_columns())
 
@@ -203,7 +201,5 @@ def first_available(die, a, b):
     desc = 'first available'
     if die is None:   # getting description w/o advancing random seed
         return desc, None
-    a_score = a.board.score()
-    b_score = b.board.score()
     # find first open column on my board and put the die in it
     return desc, a.board.avail_columns()[0]
