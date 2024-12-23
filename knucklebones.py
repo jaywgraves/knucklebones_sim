@@ -36,7 +36,7 @@ class Game(object):
             die = self.p1.roll()
             strat, play_col = self.p1.strategy(die, self.p1, self.p2)
             if self.show_output:
-                print("p1 rolled", die, "picked col", play_col)
+                print(f"p1 rolled:{die}  picked column:{play_col+1}")
             success = self.p1.board.place(die, play_col)
             if success:
                 self.p2.board.remove(die, play_col)
@@ -48,13 +48,13 @@ class Game(object):
             stats.append((game_nbr, round_cnt, turn_cnt, self.p1.name, strat, self.p1.seed, die, play_col, result, p1_score, p1_cnt, p2_score, p2_cnt))
             if result:
                 if self.show_output:
-                    print("result", result, "p1", p1_score, "p2", p2_score)
+                    print(f"result:{result} p1={p1_score} p2={p2_score}")
                 break
             turn_cnt += 1
             die = self.p2.roll()
             strat, play_col = self.p2.strategy(die, self.p2, self.p1)
             if self.show_output:
-                print("p2 rolled", die, "picked col", play_col)
+                print(f"p2 rolled:{die}  picked column:{play_col+1}")
             success = self.p2.board.place(die, play_col)
             if success:
                 self.p1.board.remove(die, play_col)
@@ -66,19 +66,19 @@ class Game(object):
             stats.append((game_nbr, round_cnt, turn_cnt, self.p2.name, strat, self.p2.seed, die, play_col, result, p1_score, p1_cnt, p2_score, p2_cnt))
             if result:
                 if self.show_output:
-                    print("result", result, "p1", p1_score, "p2", p2_score)
+                    print(f"result:{result} p1={p1_score} p2={p2_score}")
                 break
             if self.show_output:
                 self.p2.board.show(reverse=True)
-                print('-------------------')
+                print('-----')
                 self.p1.board.show()
-                print("round summary", round_cnt, "p1", p1_score, "p2", p2_score)
+                print(f"round summary:{round_cnt} p1={p1_score} p2={p2_score}")
                 print()
 
         if self.show_output:
             print('final board')
             self.p2.board.show(reverse=True)
-            print('-------------------')
+            print('-----')
             self.p1.board.show()
             print()
         return stats
@@ -168,7 +168,8 @@ class Board(object):
             if a == 0: a = '-'
             if b == 0: b = '-'
             if c == 0: c = '-'
-            print(a, '\t', b, '\t', c)
+            #print(a, '\t', b, '\t', c)
+            print(a, b, c)
 
 
 
