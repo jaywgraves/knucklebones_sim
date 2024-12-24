@@ -28,10 +28,8 @@ if __name__ == '__main__':
     start = time.time()
     for i in range(total_runs):
         game_nbr = i+1
-        #p1 = knucklebones.Player('p1', get_seed(beg_seed, end_seed), knucklebones.random_play)
-        #p2 = knucklebones.Player('p2', get_seed(beg_seed, end_seed), knucklebones.random_play)
-        p1 = knucklebones.Player('p1', get_seed(beg_seed, end_seed), knucklebones.first_available)
-        p2 = knucklebones.Player('p2', get_seed(beg_seed, end_seed), knucklebones.first_available)
+        p1 = knucklebones.Player('p1', get_seed(beg_seed, end_seed), "jerk")
+        p2 = knucklebones.Player('p2', get_seed(beg_seed, end_seed), "jerk")
 
         g = knucklebones.Game(p1, p2, show_output=show_output)
         stats = g.play(game_nbr)

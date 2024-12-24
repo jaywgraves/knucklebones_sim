@@ -1,5 +1,6 @@
 import random
 import collections
+import importlib
 
 class Game(object):
 
@@ -38,18 +39,18 @@ class Game(object):
             for pcurr,pother in ((self.p1, self.p2), (self.p2, self.p1)):
                 turn_cnt += 1
                 die = pcurr.roll()
-                strat, play_col = pcurr.strategy(die, pcurr, pother)
+                play_col = pcurr.strategy(die, pcurr, pother)
                 if self.show_output:
                     print(f"{pcurr.name} rolled:{die}  picked column:{play_col+1}")
                 success = pcurr.board.place(die, play_col)
                 if success:
                     pother.board.remove(die, play_col)
                 else:
-                    print(f"{pcurr.name} strategy {strat} made an invalid suggestion")
+                    print(f"{pcurr.name} strategy {pcurr.strateu_desc} made an invalid suggestion")
                     print(stats)
                     raise SystemExit
                 result, p1_score, p1_cnt, p2_score, p2_cnt = self.check_for_win()
-                stats.append((game_nbr, round_cnt, turn_cnt, pcurr.name, strat, pcurr.seed, die, play_col, result, p1_score, p1_cnt, p2_score, p2_cnt))
+                stats.append((game_nbr, round_cnt, turn_cnt, pcurr.name, pcurr.strategy_desc, pcurr.seed, die, play_col, result, p1_score, p1_cnt, p2_score, p2_cnt))
                 if result:
                     if self.show_output:
                         print(f"result:{result} p1={p1_score} p2={p2_score}")
@@ -167,16 +168,18 @@ class Board(object):
 
 class Player(object):
 
-    def __init__(self, name, seed, strategy):
+    def __init__(self, name, seed, strategy_desc):
         self.name = name
         self.seed = seed
         self.rand_dice = random.Random(seed)
         self.rand_decision = random.Random(seed)
-        if strategy:
-            self.strategy = strategy
-        else:
-            self.strategy = random_play
-        self.strategy_desc, _ = self.strategy(None, None, None)
+        if strategy_desc:
+            self.strategy_desc = strategy_desc
+            try:
+                strat_module = importlib.import_module(f"strategies.{strategy_desc}")
+            except ModuleNotFoundError:
+                raise SystemExit(f"player: {name} strategy: {strategy_desc} is invalid.")
+            self.strategy = strat_module.play
         self.board = Board()
 
     def roll(self):
@@ -184,52 +187,3 @@ class Player(object):
 
     def choose(self, choices=[0,1]):
         return self.rand_decision.choice(choices)
-
-
-def random_play(die, a, b):
-    # 'a' and 'b' can refer to either p1 or p2 based
-    # on who is playing this turn
-    desc = 'random play'
-    if die is None:   # getting description w/o advancing random seed
-        return desc, None
-    # find any open column on my board and put the die in it
-    return desc, a.choose(a.board.avail_columns())
-
-def first_available(die, a, b):
-    # 'a' and 'b' can refer to either p1 or p2 based
-    # on who is playing this turn
-    desc = 'first available'
-    if die is None:   # getting description w/o advancing random seed
-        return desc, None
-    # find first open column on my board and put the die in it
-    return desc, a.board.avail_columns()[0]
-
-def jerk(die, a, b):
-    # 'a' and 'b' can refer to either p1 or p2 based
-    # on who is playing this turn
-    desc = 'jerk'
-    if die is None:   # getting description w/o advancing random seed
-        return desc, None
-    # using my available columns, figure out which opponent's column
-    # has the most of my die
-    opp_cols = b.board._columns()
-    my_avail = a.board.avail_columns()
-    max_cnt = 0
-    max_cnt_col = []
-    for c in my_avail:
-        cnt = opp_cols[c].count(die)
-        if not max_cnt:
-            max_cnt = cnt
-            max_cnt_col.append(c)
-        else:
-            if cnt == max_cnt:
-                max_cnt_col.append(c)
-            elif cnt > max_cnt:
-                max_cnt = cnt
-                max_cnt_col.clear()
-                max_cnt_col.append(c)
-    if max_cnt == 0:
-        choice = a.choose(my_avail)
-    else:
-        choice = a.choose(max_cnt_col)
-    return desc, choice
