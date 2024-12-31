@@ -30,21 +30,21 @@ if __name__ == '__main__':
     game_nbr = 0
     for strat1,strat2 in pairs:
         print(f'{strat1} vs {strat2}')
-        all_stats = []
+        all_turns = []
         for i in range(total_games_per_matchup):
             game_nbr += 1
             p1 = knucklebones.Player('p1', get_seed(beg_seed, end_seed), strat1)
             p2 = knucklebones.Player('p2', get_seed(beg_seed, end_seed), strat2)
 
             g = knucklebones.Game(p1, p2, show_output=show_output)
-            stats = g.play(game_nbr)
-            all_stats.extend(stats)
-        filename = format(game_nbr, "08d") + '_stats.csv'
-        print("saving stats", filename)
+            turns = g.play(game_nbr)
+            all_turns.extend(turns)
+        filename = format(game_nbr, "08d") + '_turns.csv'
+        print("saving turn data", filename)
         with open(os.path.join(data_dir, filename),'w') as f:
-            for s in all_stats:
+            for s in all_turns:
                 f.write(",".join(str(x) for x in s) + "\n")
-        all_stats.clear()
+        all_turns.clear()
         print("elapsed seconds", time.time()-start)
         print()
     end = time.time()

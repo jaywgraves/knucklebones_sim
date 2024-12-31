@@ -31,7 +31,7 @@ class Game(object):
         turn_cnt = 0
         round_cnt = 0
         game_over = False
-        stats = []
+        turns= []
         if self.show_output:
             print(f"game number:{game_nbr}  p1: strategy='{self.p1.strategy_desc}' seed={self.p1.seed}  p2: strategy='{self.p2.strategy_desc}' seed={self.p2.seed}")
         while True:
@@ -47,10 +47,10 @@ class Game(object):
                     pother.board.remove(die, play_col)
                 else:
                     print(f"{pcurr.name} strategy {pcurr.strateu_desc} made an invalid suggestion")
-                    print(stats)
+                    print(turns)
                     raise SystemExit
                 result, p1_score, p1_cnt, p2_score, p2_cnt = self.check_for_win()
-                stats.append((game_nbr, round_cnt, turn_cnt, pcurr.name, pcurr.strategy_desc, pcurr.seed, die, play_col, result, p1_score, p1_cnt, p2_score, p2_cnt))
+                turns.append((game_nbr, round_cnt, turn_cnt, pcurr.name, pcurr.strategy_desc, pcurr.seed, die, play_col, result, p1_score, p1_cnt, p2_score, p2_cnt))
                 if result:
                     if self.show_output:
                         print(f"result:{result} p1={p1_score} p2={p2_score}")
@@ -69,7 +69,7 @@ class Game(object):
                 print()
             if game_over:
                 break  # whole game loop
-        return stats
+        return turns
 
 
 class Board(object):

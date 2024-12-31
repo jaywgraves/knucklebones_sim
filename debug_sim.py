@@ -5,7 +5,7 @@ def sim_game(game_nbr, p1_seed, p1_strat, p2_seed, p2_strat):
     p2 = knucklebones.Player('p2', p2_seed, p2_strat)
 
     g = knucklebones.Game(p1, p2, show_output=True)
-    stats = g.play(game_nbr)
+    turns = g.play(game_nbr)
 
 if __name__ == '__main__':
     #sim_game(1, 565529, 'random_play', 831366,'first_available')

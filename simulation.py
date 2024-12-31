@@ -13,7 +13,7 @@ def get_seed(start,end,seeds_used=seeds_used):
     return seed
 
 if __name__ == '__main__':
-    all_stats = []
+    all_turns = []
     total_runs = 10000
     checkpoint = 10000
     show_output = False
@@ -32,15 +32,15 @@ if __name__ == '__main__':
         p2 = knucklebones.Player('p2', get_seed(beg_seed, end_seed), "jerk")
 
         g = knucklebones.Game(p1, p2, show_output=show_output)
-        stats = g.play(game_nbr)
-        all_stats.extend(stats)
+        turns = g.play(game_nbr)
+        all_turns.extend(turns)
         if (game_nbr) % checkpoint == 0:
-            filename = format(i+1, "08d") + '_stats.csv'
+            filename = format(i+1, "08d") + '_turns.csv'
             print("saving checkpoint", filename, datetime.datetime.isoformat(datetime.datetime.now()))
             with open(os.path.join(data_dir, filename),'w') as f:
-                for s in all_stats:
+                for s in all_turns:
                     f.write(",".join(str(x) for x in s) + "\n")
-            all_stats.clear()
+            all_turns.clear()
     end = time.time()
 
     print("elapsed seconds", end-start)
