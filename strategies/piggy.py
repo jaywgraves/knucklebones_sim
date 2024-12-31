@@ -1,10 +1,12 @@
+def description():
+    return """place die only favoring making combos:
+figure out if any of my available columns has
+the matching die and put it in the one with
+the most of that die."""
 
-def play(die, a, b):
-    # 'a' and 'b' can refer to either p1 or p2 based
-    # on who is playing this turn
-    # place my die favoring combos
-    my_cols = a.board._columns()
-    my_avail = a.board.avail_columns()
+def play(die, me, opp):
+    my_cols = me.board._columns()
+    my_avail = me.board.avail_columns()
     max_cnt = 0
     max_cnt_col = []
     for c in my_avail:
@@ -20,7 +22,7 @@ def play(die, a, b):
                 max_cnt_col.clear()
                 max_cnt_col.append(c)
     if max_cnt == 0:
-        choice = a.choose(my_avail)
+        choice = me.choose(my_avail)
     else:
-        choice = a.choose(max_cnt_col)
+        choice = me.choose(max_cnt_col)
     return choice

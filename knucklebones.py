@@ -33,24 +33,24 @@ class Game(object):
         game_over = False
         turns= []
         if self.show_output:
-            print(f"game number:{game_nbr}  p1: strategy='{self.p1.strategy_desc}' seed={self.p1.seed}  p2: strategy='{self.p2.strategy_desc}' seed={self.p2.seed}")
+            print(f"game number:{game_nbr}  p1: strategy='{self.p1.strategy_name}' seed={self.p1.seed}  p2: strategy='{self.p2.strategy_name}' seed={self.p2.seed}")
         while True:
             round_cnt += 1
             for pcurr,pother in ((self.p1, self.p2), (self.p2, self.p1)):
                 turn_cnt += 1
                 die = pcurr.roll()
-                play_col = pcurr.strategy(die, pcurr, pother)
+                play_col = pcurr.play(die, pcurr, pother)
                 if self.show_output:
                     print(f"{pcurr.name} rolled:{die}  picked column:{play_col+1}")
                 success = pcurr.board.place(die, play_col)
                 if success:
                     pother.board.remove(die, play_col)
                 else:
-                    print(f"{pcurr.name} strategy {pcurr.strateu_desc} made an invalid suggestion")
+                    print(f"{pcurr.name} strategy {pcurr.strategy_name} made an invalid suggestion")
                     print(turns)
                     raise SystemExit
                 result, p1_score, p1_cnt, p2_score, p2_cnt = self.check_for_win()
-                turns.append((game_nbr, round_cnt, turn_cnt, pcurr.name, pcurr.strategy_desc, pcurr.seed, die, play_col, result, p1_score, p1_cnt, p2_score, p2_cnt))
+                turns.append((game_nbr, round_cnt, turn_cnt, pcurr.name, pcurr.strategy_name, pcurr.seed, die, play_col, result, p1_score, p1_cnt, p2_score, p2_cnt))
                 if result:
                     if self.show_output:
                         print(f"result:{result} p1={p1_score} p2={p2_score}")
@@ -168,18 +168,19 @@ class Board(object):
 
 class Player(object):
 
-    def __init__(self, name, seed, strategy_desc):
+    def __init__(self, name, seed, strategy_name):
         self.name = name
         self.seed = seed
         self.rand_dice = random.Random(seed)
         self.rand_decision = random.Random(seed)
-        if strategy_desc:
-            self.strategy_desc = strategy_desc
+        if strategy_name:
+            self.strategy_name = strategy_name
             try:
-                strat_module = importlib.import_module(f"strategies.{strategy_desc}")
+                strat_module = importlib.import_module(f"strategies.{strategy_name}")
             except ModuleNotFoundError:
-                raise SystemExit(f"player: {name} strategy: {strategy_desc} is invalid.")
-            self.strategy = strat_module.play
+                raise SystemExit(f"player: {name} strategy: {strategy_name} is invalid.")
+            self.play = strat_module.play
+            self.strategy_description = strat_module.description()
         self.board = Board()
 
     def roll(self):
