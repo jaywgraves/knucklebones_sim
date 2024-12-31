@@ -1,3 +1,6 @@
+create table strategy as
+select * from read_json_auto('data/strategies.json');
+
 create table turns as
 select *
 from
